@@ -40,11 +40,11 @@ class SignUpBloc {
     _likeBananas = FormControl<bool>(initialValue: false);
 
     form = FormGroup<SignUp>({
-      'likeBananas': _likeBananas,
-      'email': _emailControl,
-      'password': _passwordControl,
-      'confirmation': _confirmControl,
-      'state': FormControl<int>(initialValue: 3),
+      SignUpFields.LIKE_BANANAS: _likeBananas,
+      SignUpFields.EMAIL: _emailControl,
+      SignUpFields.PASSWORD: _passwordControl,
+      SignUpFields.CONFIRMATION: _confirmControl,
+      SignUpFields.STATE: FormControl<int>(initialValue: 3),
     }, SignUp.fromJson);
 
   }

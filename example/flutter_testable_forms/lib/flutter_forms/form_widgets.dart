@@ -16,7 +16,7 @@ class ControlledTextField extends StatefulWidget {
     this.textInputType,
     this.obscureText,
     this.textInputAction,
-  });
+  }) : assert (control != null);
 
   String get errorText {
     if ((control.touched || control.submitRequested) && control.enabled) {

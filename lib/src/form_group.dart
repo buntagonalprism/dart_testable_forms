@@ -56,12 +56,14 @@ class FormGroup<T> extends AbstractControl<T> {
 
   @override
   setValue(T value) {
-    final initialValues = _serialize(value);
-    initialValues.forEach((key, value) {
-      if (controls.containsKey(key)) {
-        controls[key].setValue(initialValues[key]);
-      }
-    });
+    if (value != null) {
+      final initialValues = _serialize(value);
+      controls.forEach((key, control) {
+        if (!initialValues.containsKey(key)) {
+          throw "Control with key '$key' does not have a corresponding field in class ${value.runtimeType.toString()}";
+        }
+      });
+    }
   }
 
   @override

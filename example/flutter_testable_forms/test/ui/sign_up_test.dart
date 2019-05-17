@@ -8,30 +8,31 @@ import 'package:flutter_testable_forms/ui/sign_up.dart';
 import 'package:mockito/mockito.dart';
 
 
-class BlocMock extends Mock implements SignUpBloc {}
+class MockBloc extends Mock implements SignUpBloc {}
 class MockGroup extends Mock implements FormGroup<SignUp> {}
 class MockControl extends Mock implements FormControl<String> {}
 
 void main() {
 
-  SignUpBloc bloc;
+  MockBloc bloc;
 
   setUp(() {
-    bloc = SignUpBloc();
+    bloc = MockBloc();
+    when(bloc.form).thenReturn(buildControls());
   });
 
   testWidgets('Email field bound to control', (WidgetTester tester) async {
     await pumpWithMaterial(tester, SignUpScreen(title: 'hello', bloc: bloc));
     Finder fieldFinder = fieldWithLabel("Email Address");
     ControlledTextField field = tester.widget(fieldFinder);
-    expect(field.control, bloc.form.controls['email']);
+    expect(field.control, bloc.form.controls[SignUpFields.EMAIL]);
   });
 
   testWidgets('Password field bound to control', (WidgetTester tester) async {
     await pumpWithMaterial(tester, SignUpScreen(title: 'hello', bloc: bloc));
     Finder fieldFinder = fieldWithLabel("Password");
     ControlledTextField field = tester.widget(fieldFinder);
-    expect(field.control, bloc.form.controls['password']);
+    expect(field.control, bloc.form.controls[SignUpFields.PASSWORD]);
   });
 }
 
@@ -47,4 +48,15 @@ Finder fieldWithLabel(String label) {
   final labelFinder = find.text(label);
   final fieldFinder = find.ancestor(of: labelFinder, matching: find.byType(ControlledTextField));
   return fieldFinder;
+}
+
+FormGroup<SignUp> buildControls() {
+  final fb = FormBuilder();
+  return fb.group(null, SignUp.fromJson, {
+    SignUpFields.EMAIL: fb.control<String>(),
+    SignUpFields.PASSWORD: fb.control<String>(),
+    SignUpFields.CONFIRMATION: fb.control<String>(),
+    SignUpFields.LIKE_BANANAS: fb.control<bool>(),
+    SignUpFields.STATE: fb.control<int>()
+  });
 }
