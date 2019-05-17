@@ -69,7 +69,7 @@ class _ControlledTextFieldState extends State<ControlledTextField> {
       textInputAction: widget.textInputAction,
       onChanged: (value) => widget.control.setValue(value),
       decoration: (widget.decoration ?? InputDecoration()).copyWith(
-        errorText: widget.control.combineErrors(newlineErrorCombiner),
+        errorText: widget.control.combineErrors(NewlineErrorCombiner()),
       ),
     );
   }

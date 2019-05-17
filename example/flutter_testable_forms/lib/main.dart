@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_testable_forms/blocs/sign_up_bloc.dart';
 import 'package:flutter_testable_forms/ui/sign_up.dart';
 
 void main() => runApp(MyApp());
@@ -18,7 +19,10 @@ class MyApp extends StatelessWidget {
           isDense: true,
         ),
       ),
-      home: SignUpScreen(title: 'Flutter Demo Home Page'),
+      home: SignUpScreen(
+        title: 'Flutter Demo Home Page', 
+        bloc: SignUpBloc(),
+      ),
     );
   }
 }

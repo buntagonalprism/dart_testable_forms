@@ -62,4 +62,32 @@ class FormControl<T> extends AbstractControl<T> {
     _touched = touched;
     _notifyView();
   }
+
+
+  String combineErrors(ErrorCombiner<T> combiner) => combiner.combine(this);
+}
+
+abstract class ErrorCombiner<T> extends Equatable {
+  ErrorCombiner(List props) : super(props);
+  String combine(FormControl<T> control);
+}
+
+/// A helper for getting a combined error message to display. Returns:
+/// - null if the field is disabled
+/// - null if the field is enabled, but not touched or submitRequested
+/// - All error values combined with a newline separator if enabled, and either touched or submitRequested
+class NewlineErrorCombiner extends ErrorCombiner<String> {
+  final newlineSeparator;
+  NewlineErrorCombiner([this.newlineSeparator = '\n']) : super([newlineSeparator]);
+
+  String combine(FormControl<String> control) {
+    if ((control.touched || control.submitRequested) && control.enabled) {
+      return control.errors.length > 0
+          ? control.errors.values.map((error) => error.toString()).join('\n')
+          : null;
+    } else {
+      return null;
+    }
+  }
+
 }

@@ -8,15 +8,17 @@ import 'package:flutter_testable_forms/flutter_forms/form_widgets.dart';
 final _scaffoldKey = GlobalKey<ScaffoldState>();
 
 class SignUpScreen extends StatefulWidget {
-  SignUpScreen({Key key, this.title}) : super(key: key);
   final String title;
+  final SignUpBloc bloc;
+  SignUpScreen({Key key, this.title, this.bloc}) : super(key: key);
+  
 
   @override
   _SignUpScreenState createState() => _SignUpScreenState();
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  SignUpBloc _bloc;
+  SignUpBloc bloc;
 
   List<DropdownMenuItem<String>> items;
 
@@ -28,7 +30,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   void initState() {
     super.initState();
-    _bloc = SignUpBloc();
+    bloc = widget.bloc;
     items =  <String>['One', 'Two', 'Free', 'Four']
         .map<DropdownMenuItem<String>>((String value) {
       return DropdownMenuItem<String>(
@@ -41,7 +43,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    FormControl<bool> likeBananas = _bloc.form.controls['likeBananas'];
+    FormControl<bool> likeBananas = bloc.form.controls['likeBananas'];
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -75,7 +77,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: ControlledDropDown(_bloc.form.controls['state'], {
+                child: ControlledDropDown(bloc.form.controls['state'], {
                   'New South Wales': 0,
                   'Australian Capital Territory': 1,
                   'Queensland': 2,
@@ -91,7 +93,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ControlledTextField(
-                  _bloc.form.controls['email'],
+                  bloc.form.controls['email'],
                   decoration: InputDecoration(
                       labelText: 'Email Address'
                   ),
@@ -102,7 +104,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ControlledTextField(
-                  _bloc.form.controls['password'],
+                  bloc.form.controls['password'],
                   decoration: InputDecoration(
                       labelText: 'Password',
                       suffixIcon: IconButton(
@@ -117,7 +119,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ControlledTextField(
-                  _bloc.form.controls['confirmation'],
+                  bloc.form.controls['confirmation'],
                   decoration: InputDecoration(
                       labelText: 'Confirm Password',
                       suffixIcon: IconButton(
@@ -131,12 +133,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
               RaisedButton(
                 child: Text('SIGN UP'),
                 onPressed: () {
-                  _bloc.form.setSubmitRequested(true);
-                  bool valid = _bloc.form.valid;
+                  bloc.form.setSubmitRequested(true);
+                  bool valid = bloc.form.valid;
                   if (valid) {
                     showSnackBar('all fields valid');
-                    print(_bloc.form.value);
-                    print(json.encode(_bloc.form.value));
+                    print(bloc.form.value);
+                    print(json.encode(bloc.form.value));
                   } else {
                     showSnackBar('there are invalid fields');
                   }
@@ -147,7 +149,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _bloc.post,
+        onPressed: bloc.post,
         tooltip: 'Increment',
         child: Icon(Icons.add),
       ),

@@ -138,6 +138,45 @@ void main() {
     expect(didChange, true);
   });
 
+  group('Newline error combiner output', () {
+
+    FormControl<String> control;
+    setUp(() {
+      control = FormControl<String>();
+      control.setValidators(vb([MockValidator({'er1': 'hello', 'er2': 'foobar'})]));
+    });
+
+    test('null when control not enabled', () {
+      setMockStates(control, enabled: false, submitted: false, touched: false);
+      expect(control.combineErrors(NewlineErrorCombiner()), null);
+
+      setMockStates(control, enabled: false, submitted: false, touched: true);
+      expect(control.combineErrors(NewlineErrorCombiner()), null);
+
+      setMockStates(control, enabled: false, submitted: true, touched: false);
+      expect(control.combineErrors(NewlineErrorCombiner()), null);
+
+      setMockStates(control, enabled: false, submitted: true, touched: true);
+      expect(control.combineErrors(NewlineErrorCombiner()), null);
+    });
+
+    test('null when control enabled but not touched or submitted', () {
+      setMockStates(control, enabled: true, submitted: false, touched: false);
+      expect(control.combineErrors(NewlineErrorCombiner()), null);
+    });
+
+    test('Combine errors with separator when enabled and either touched or submitted', () {
+      setMockStates(control, enabled: true, submitted: false, touched: true);
+      expect(control.combineErrors(NewlineErrorCombiner()), 'hello\nfoobar');
+
+      setMockStates(control, enabled: true, submitted: true, touched: false);
+      expect(control.combineErrors(NewlineErrorCombiner()), 'hello\nfoobar');
+
+      setMockStates(control, enabled: true, submitted: true, touched: true);
+      expect(control.combineErrors(NewlineErrorCombiner()), 'hello\nfoobar');
+    });
+  });
+
 }
 
 class MockValidator extends Validator<String> {
@@ -151,4 +190,10 @@ class MockValidator extends Validator<String> {
     calledWithValues.add(control.value);
     return returnErrors;
   }
+}
+
+void setMockStates(FormControl<String> control, {bool enabled, bool touched, bool submitted}) {
+  control.setEnabled(enabled);
+  control.setTouched(touched);
+  control.setSubmitRequested(submitted);
 }
