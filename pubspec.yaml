@@ -1,0 +1,15 @@
+name: dart_testable_forms
+description: An easy-to-test form input framework in pure dart, designed for re-use between flutter and angulardart projects
+version: 0.0.1
+author:
+homepage:
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+
+dependencies:
+  equatable: ^0.2.3
+
+dev_dependencies:
+  test:
+  mockito: ^4.0.0
