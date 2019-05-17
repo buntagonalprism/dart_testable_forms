@@ -9,6 +9,7 @@ abstract class FormKeys {
 
 class SignUpBloc {
 
+  FormControl<bool> _likeBananas;
   FormControl<String> _emailControl;
   FormControl<String> _passwordControl;
   FormControl<String> _confirmControl;
@@ -36,10 +37,14 @@ class SignUpBloc {
     final confirmValidators = vsb([confirmRequiredValidator]);
     _confirmControl = FormControl<String>(initialValue: '', validators: confirmValidators);
 
+    _likeBananas = FormControl<bool>(initialValue: false);
+
     form = FormGroup<SignUp>({
+      'likeBananas': _likeBananas,
       'email': _emailControl,
       'password': _passwordControl,
-      'confirmation': _confirmControl
+      'confirmation': _confirmControl,
+      'state': FormControl<int>(initialValue: 3),
     }, SignUp.fromJson);
 
   }

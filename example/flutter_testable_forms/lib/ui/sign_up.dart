@@ -41,70 +41,109 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    FormControl<bool> likeBananas = _bloc.form.controls['likeBananas'];
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ControlledTextField(
-                _bloc.form.controls['email'],
-                decoration: InputDecoration(
-                    labelText: 'Email Address'
-                ),
-                textInputType: TextInputType.emailAddress,
-                textInputAction: TextInputAction.next,
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(
+                height: 48,
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ControlledTextField(
-                _bloc.form.controls['password'],
-                decoration: InputDecoration(
-                    labelText: 'Password',
-                    suffixIcon: IconButton(
-                      icon: Icon(obscurePassword ? Icons.visibility : Icons.visibility_off),
-                      onPressed: () => setState(() => obscurePassword = !obscurePassword),
-                    )
-                ),
-                obscureText: obscurePassword,
-                textInputAction: TextInputAction.next,
+              Center(
+                child: Text('How do you feel about curved yellow fruit/berry combos?'),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ControlledTextField(
-                _bloc.form.controls['confirmation'],
-                decoration: InputDecoration(
-                    labelText: 'Confirm Password',
-                    suffixIcon: IconButton(
-                      icon: Icon(obscureConfirmation ? Icons.visibility : Icons.visibility_off),
-                      onPressed: () => setState(() => obscureConfirmation = !obscureConfirmation),
-                    )
-                ),
-                obscureText: obscureConfirmation,
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ControlledRadioGroup<bool>(likeBananas, {
+                  'Yes I like bananas': true,
+                  'Bananas are disgusted': false,
+                }),
               ),
-            ),
-            RaisedButton(
-              child: Text('SIGN UP'),
-              onPressed: () {
-                _bloc.form.setSubmitRequested(true);
-                bool valid = _bloc.form.valid;
-                if (valid) {
-                  showSnackBar('all fields valid');
-                  print(_bloc.form.value);
-                  print(json.encode(_bloc.form.value));
-                } else {
-                  showSnackBar('there are invalid fields');
-                }
-              },
-            )
-          ],
+              StreamBuilder(
+                stream: likeBananas.valueUpdated,
+                builder: (context, _) {
+                  return Text(
+                      (likeBananas.value ?? false) ? 'Good to hear. Want a smoothie?' : 'No cake for you then'
+                  );
+                },
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ControlledDropDown(_bloc.form.controls['state'], {
+                  'New South Wales': 0,
+                  'Australian Capital Territory': 1,
+                  'Queensland': 2,
+                  'South Australia': 3,
+                  'Victoria': 4,
+                  'Tasmania': 5,
+                  'Western Australia': 6,
+                  'Northern Terriorty': 7
+                }, decoration: InputDecoration(
+                  labelText: 'What state are you from?',
+                ),),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ControlledTextField(
+                  _bloc.form.controls['email'],
+                  decoration: InputDecoration(
+                      labelText: 'Email Address'
+                  ),
+                  textInputType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ControlledTextField(
+                  _bloc.form.controls['password'],
+                  decoration: InputDecoration(
+                      labelText: 'Password',
+                      suffixIcon: IconButton(
+                        icon: Icon(obscurePassword ? Icons.visibility : Icons.visibility_off),
+                        onPressed: () => setState(() => obscurePassword = !obscurePassword),
+                      )
+                  ),
+                  obscureText: obscurePassword,
+                  textInputAction: TextInputAction.next,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ControlledTextField(
+                  _bloc.form.controls['confirmation'],
+                  decoration: InputDecoration(
+                      labelText: 'Confirm Password',
+                      suffixIcon: IconButton(
+                        icon: Icon(obscureConfirmation ? Icons.visibility : Icons.visibility_off),
+                        onPressed: () => setState(() => obscureConfirmation = !obscureConfirmation),
+                      )
+                  ),
+                  obscureText: obscureConfirmation,
+                ),
+              ),
+              RaisedButton(
+                child: Text('SIGN UP'),
+                onPressed: () {
+                  _bloc.form.setSubmitRequested(true);
+                  bool valid = _bloc.form.valid;
+                  if (valid) {
+                    showSnackBar('all fields valid');
+                    print(_bloc.form.value);
+                    print(json.encode(_bloc.form.value));
+                  } else {
+                    showSnackBar('there are invalid fields');
+                  }
+                },
+              )
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
