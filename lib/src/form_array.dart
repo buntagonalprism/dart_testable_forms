@@ -22,13 +22,6 @@ class FormArray<T> extends AbstractControl<List<T>> {
 
   List<AbstractControl<T>> get controls => _controls;
 
-  /// Should only be used by the view input field which is binding to this control. The
-  /// [ViewNotifier] allows the view to receive updates including value, errors or state changes
-  /// occur in this control. To respond to user input, listen to the [valueUpdated] stream instead.
-  registerModelUpdatedListener(ViewNotifier notifier) {
-    _viewNotifier = notifier;
-  }
-
   @override
   setSubmitRequested(bool submitRequested) {
     _submitRequested = submitRequested;
@@ -113,9 +106,7 @@ class FormArray<T> extends AbstractControl<List<T>> {
     if (_valueController.hasListener) {
       _valueController.add(value);
     }
-    if (_viewNotifier != null) {
-      _viewNotifier();
-    }
+    _modelUpdated.add(null);
   }
 
 }

@@ -170,10 +170,10 @@ void main() {
   });
 
   group('Modifying controls', () {
-    test('Adding notifies view and listeners', () {
+    test('Adding notifies view and listeners', () async {
       final array = FormArray<String>(controls);
       bool didChange = false;
-      array.registerModelUpdatedListener(() {
+      array.modelUpdated.listen((_) {
         expect(array.controls.length, 4);
         didChange = true;
       });
@@ -181,13 +181,14 @@ void main() {
         [null, null, null, 'a']
       ]));
       array.append(FormControl<String>(initialValue: 'a'));
+      await Future.delayed(Duration());
       expect(didChange, true);
     });
 
-    test('Inserting notifies view and listeners', () {
+    test('Inserting notifies view and listeners', () async {
       final array = FormArray<String>(controls);
       bool didChange = false;
-      array.registerModelUpdatedListener(() {
+      array.modelUpdated.listen((_) {
         expect(array.controls.length, 4);
         didChange = true;
       });
@@ -195,16 +196,17 @@ void main() {
         [null, 'b', null, null]
       ]));
       array.insertAt(FormControl<String>(initialValue: 'b'), 1);
+      await Future.delayed(Duration());
       expect(didChange, true);
     });
 
-    test('Inserting notifies view and listeners', () {
+    test('Inserting notifies view and listeners', () async {
       when(firstMock.value).thenReturn('1');
       when(secondMock.value).thenReturn('2');
       when(thirdMock.value).thenReturn('3');
       final array = FormArray<String>(controls);
       bool didChange = false;
-      array.registerModelUpdatedListener(() {
+      array.modelUpdated.listen((_) {
         expect(array.controls.length, 2);
         didChange = true;
       });
@@ -212,6 +214,7 @@ void main() {
         ['1', '3']
       ]));
       array.removeAt(1);
+      await Future.delayed(Duration());
       expect(didChange, true);
     });
   });

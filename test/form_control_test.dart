@@ -30,8 +30,6 @@ void main() {
     });
   });
 
-
-
   group('Setting value', () {
     test('Updates control value', () {
       final control = FormControl<String>();
@@ -54,15 +52,16 @@ void main() {
       control.setValue('123');
     });
 
-    test('updates view with value and errors', () {
+    test('updates view with value and errors', () async {
       final control = FormControl<String>(validators: vb([withErrorValidator]));
       bool didChange = false;
-      control.registerModelUpdatedListener(() {
+      control.modelUpdated.listen((_) {
         expect(control.value, 'abc');
         expect(control.errors, error);
         didChange = true;
       });
       control.setValue('abc');
+      await Future.delayed(Duration());
       expect(didChange, true);
     });
   });
@@ -84,54 +83,58 @@ void main() {
       expect(control.errors, error);
     });
 
-    test('updates view with errors', () {
+    test('updates view with errors', () async {
       final control = FormControl<String>(validators: vb([noErrorValidator]));
       bool didChange = false;
-      control.registerModelUpdatedListener(() {
+      control.modelUpdated.listen((_) {
         expect(control.errors, error);
         didChange = true;
       });
       control.setValidators(vb([withErrorValidator]));
+      await Future.delayed(Duration());
       expect(didChange, true);
     });
   });
 
-  test('changing submit requested updates view ', () {
+  test('changing submit requested updates view ', () async {
     final control = FormControl<String>();
     expect(control.submitRequested, false);
 
     bool didChange = false;
-    control.registerModelUpdatedListener(() {
+    control.modelUpdated.listen((_) {
       expect(control.submitRequested, true);
       didChange = true;
     });
     control.setSubmitRequested(true);
+    await Future.delayed(Duration());
     expect(didChange, true);
   });
 
-  test('changing enabled status updates view', () {
+  test('changing enabled status updates view', () async {
     final control = FormControl<String>(enabled: true);
     expect(control.enabled, true);
 
     bool didChange = false;
-    control.registerModelUpdatedListener(() {
+    control.modelUpdated.listen((_) {
       expect(control.enabled, false);
       didChange = true;
     });
     control.setEnabled(false);
+    await Future.delayed(Duration());
     expect(didChange, true);
   });
 
-  test('changing touched status updates view', () {
+  test('changing touched status updates view', () async {
     final control = FormControl<String>();
     expect(control.touched, false);
 
     bool didChange = false;
-    control.registerModelUpdatedListener(() {
+    control.modelUpdated.listen((_) {
       expect(control.touched, true);
       didChange = true;
     });
     control.setTouched(true);
+    await Future.delayed(Duration());
     expect(didChange, true);
   });
 

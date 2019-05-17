@@ -19,13 +19,6 @@ class FormControl<T> extends AbstractControl<T> {
   @override
   T get value => _value;
 
-  /// Should only be used by the view input field which is binding to this control. The
-  /// [ViewNotifier] allows the view to receive updates including value, errors or state changes
-  /// occur in this control. To respond to user input, listen to the [valueUpdated] stream instead.
-  registerModelUpdatedListener(ViewNotifier notifier) {
-    _viewNotifier = notifier;
-  }
-
 
   @override
   setValidators(ValidatorSet<T> validators) {
@@ -58,9 +51,7 @@ class FormControl<T> extends AbstractControl<T> {
 
   /// Notify the a bound input view field of changes
   _notifyView() {
-    if (_viewNotifier != null) {
-      _viewNotifier();
-    }
+    _modelUpdated.add(null);
   }
 
   void _notifyValueListeners() {

@@ -1,4 +1,6 @@
 
+import 'dart:async';
+
 import 'package:dart_testable_forms/dart_testable_forms.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -36,11 +38,13 @@ class _ControlledTextFieldState extends State<ControlledTextField> {
   final focus = FocusNode();
   bool focused = false;
 
+  StreamSubscription sub;
+
   @override
   void initState() {
     super.initState();
     controller.text = widget.control.value;
-    widget.control.registerModelUpdatedListener(() {
+    sub = widget.control.modelUpdated.listen((_) {
       if (controller.text != widget.control.value) {
         controller.text = widget.control.value;
       }
@@ -67,6 +71,12 @@ class _ControlledTextFieldState extends State<ControlledTextField> {
       onChanged: (value) => widget.control.setValue(value),
       decoration: (widget.decoration ?? InputDecoration()).copyWith(errorText: widget.errorText),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    sub.cancel();
   }
 
 }

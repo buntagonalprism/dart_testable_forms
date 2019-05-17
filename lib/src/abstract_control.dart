@@ -7,13 +7,19 @@ abstract class AbstractControl<T> {
 
   final _errors = Map<String, dynamic>();
 
+  final _modelUpdated = StreamController<void>.broadcast();
 
-  ViewNotifier _viewNotifier;
   bool _enabled = true;
   bool _submitRequested = false;
   bool _touched = false;
   ValidatorSet<T> _validators = ValidatorSet<T>([]);
 
+
+  /// Stream notified when any change to this control occurs. These changes include changes to value
+  /// and errors, as well as updates to enabled, touched or submitRequested status. Once this event is
+  /// emitted, all changes have already been made to the control, so it is safe to rebuild any UI 
+  /// components using the current properties of the control. 
+  Stream<void> get modelUpdated => _modelUpdated.stream;
 
   /// The current errors related to the value in this control, as determined by the [validators]
   Map<String, dynamic> get errors => _errors;
@@ -41,12 +47,16 @@ abstract class AbstractControl<T> {
   ValidatorSet<T> get validators => _validators;
 
   /// Get the value of the control. If this control is disabled, the value will be returned as null
+  /// within parent groups. 
   T get value;
 
   /// Update the value of this control
   setValue(T value);
 
-  /// Update the validators that should be run when this control is validated.
+  /// Update the validators that should be run when this control is validated. Validators are run
+  /// on every value change and so should be fast to execute and synchronous. To run asynchronous
+  /// validators subscribe to valueUpdated stream, perform asynchronous work in the background,
+  /// then add a StaticErrorValidator to the control with the result of the error. 
   setValidators(ValidatorSet<T> validators);
 
   /// Whether this input field bound to this control is displaying its errors. Typically enabled
