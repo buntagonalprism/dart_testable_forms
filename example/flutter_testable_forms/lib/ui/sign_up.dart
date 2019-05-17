@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dart_testable_forms/dart_testable_forms.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_testable_forms/blocs/sign_up_bloc.dart';
+import 'package:flutter_testable_forms/data/sign_up.dart';
 import 'package:flutter_testable_forms/flutter_forms/form_widgets.dart';
 
 final _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -10,7 +11,8 @@ final _scaffoldKey = GlobalKey<ScaffoldState>();
 class SignUpScreen extends StatefulWidget {
   final String title;
   final SignUpBloc bloc;
-  SignUpScreen({Key key, this.title, this.bloc}) : super(key: key);
+  final FormWidgetBuilder builder;
+  SignUpScreen({Key key, this.title, this.bloc, this.builder}) : super(key: key);
   
 
   @override
@@ -19,6 +21,7 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   SignUpBloc bloc;
+  FormWidgetBuilder builder;
 
   List<DropdownMenuItem<String>> items;
 
@@ -30,6 +33,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   void initState() {
     super.initState();
+    builder = widget.builder ?? FormWidgetBuilder();
     bloc = widget.bloc;
     items =  <String>['One', 'Two', 'Free', 'Four']
         .map<DropdownMenuItem<String>>((String value) {
@@ -57,38 +61,41 @@ class _SignUpScreenState extends State<SignUpScreen> {
               SizedBox(
                 height: 48,
               ),
-              Center(
-                child: Text('How do you feel about curved yellow fruit/berry combos?'),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ControlledRadioGroup<bool>(likeBananas, {
-                  'Yes I like bananas': true,
-                  'Bananas are disgusted': false,
-                }),
-              ),
-              StreamBuilder(
-                stream: likeBananas.valueUpdated,
-                builder: (context, _) {
-                  return Text(
-                      (likeBananas.value ?? false) ? 'Good to hear. Want a smoothie?' : 'No cake for you then'
-                  );
-                },
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ControlledDropDown(bloc.form.controls['state'], {
-                  'New South Wales': 0,
-                  'Australian Capital Territory': 1,
-                  'Queensland': 2,
-                  'South Australia': 3,
-                  'Victoria': 4,
-                  'Tasmania': 5,
-                  'Western Australia': 6,
-                  'Northern Terriorty': 7
-                }, decoration: InputDecoration(
-                  labelText: 'What state are you from?',
-                ),),
+              builder.build(
+                child: Column(
+                  children: <Widget>[
+                    Center(
+                      child: Text('How do you feel about curved yellow fruit/berry combos?'),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ControlledRadioGroup<bool>(likeBananas, {
+                        'Yes I like bananas': true,
+                        'Bananas are disgusted': false,
+                      }),
+                    ),
+                    StreamBuilder(
+                      stream: likeBananas.valueUpdated,
+                      builder: (context, _) {
+                        return Text(
+                            (likeBananas.value ?? false) ? 'Good to hear. Want a smoothie?' : 'No cake for you then'
+                        );
+                      },
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ControlledDropDown(bloc.form.controls[SignUpFields.BANANA_TYPE], {
+                        'Dwarf Cavendish': 0,
+                        'Williams Hybrid': 1,
+                        'Valery': 2,
+                        'Apple (It\'s a trap)': 3,
+                        'Red Jamaica': 4,
+                      }, decoration: InputDecoration(
+                        labelText: 'What type of banana do you like?',
+                      ),),
+                    ),
+                  ],
+                )
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),

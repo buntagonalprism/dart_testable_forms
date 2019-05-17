@@ -15,6 +15,7 @@ class MockControl extends Mock implements FormControl<String> {}
 void main() {
 
   MockBloc bloc;
+  MockBuilder builder = MockBuilder();
 
   setUp(() {
     bloc = MockBloc();
@@ -22,14 +23,14 @@ void main() {
   });
 
   testWidgets('Email field bound to control', (WidgetTester tester) async {
-    await pumpWithMaterial(tester, SignUpScreen(title: 'hello', bloc: bloc));
+    await pumpWithMaterial(tester, SignUpScreen(title: 'hello', bloc: bloc, builder: builder,));
     Finder fieldFinder = fieldWithLabel("Email Address");
     ControlledTextField field = tester.widget(fieldFinder);
     expect(field.control, bloc.form.controls[SignUpFields.EMAIL]);
   });
 
   testWidgets('Password field bound to control', (WidgetTester tester) async {
-    await pumpWithMaterial(tester, SignUpScreen(title: 'hello', bloc: bloc));
+    await pumpWithMaterial(tester, SignUpScreen(title: 'hello', bloc: bloc, builder: builder,));
     Finder fieldFinder = fieldWithLabel("Password");
     ControlledTextField field = tester.widget(fieldFinder);
     expect(field.control, bloc.form.controls[SignUpFields.PASSWORD]);
@@ -57,6 +58,14 @@ FormGroup<SignUp> buildControls() {
     SignUpFields.PASSWORD: fb.control<String>(),
     SignUpFields.CONFIRMATION: fb.control<String>(),
     SignUpFields.LIKE_BANANAS: fb.control<bool>(),
-    SignUpFields.STATE: fb.control<int>()
+    SignUpFields.BANANA_TYPE: fb.control<int>()
   });
+}
+
+class MockBuilder implements FormWidgetBuilder {
+  @override
+  Widget build({Widget child}) {
+    return Container();
+  }
+
 }

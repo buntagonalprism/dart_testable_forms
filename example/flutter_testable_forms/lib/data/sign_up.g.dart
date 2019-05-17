@@ -12,7 +12,7 @@ SignUp _$SignUpFromJson(Map<String, dynamic> json) {
     ..password = json['password'] as String
     ..confirmation = json['confirmation'] as String
     ..likeBananas = json['likeBananas'] as bool
-    ..state = json['state'] as int;
+    ..bananaType = json['bananaType'] as int;
 }
 
 Map<String, dynamic> _$SignUpToJson(SignUp instance) => <String, dynamic>{
@@ -20,5 +20,5 @@ Map<String, dynamic> _$SignUpToJson(SignUp instance) => <String, dynamic>{
       'password': instance.password,
       'confirmation': instance.confirmation,
       'likeBananas': instance.likeBananas,
-      'state': instance.state
+      'bananaType': instance.bananaType
     };

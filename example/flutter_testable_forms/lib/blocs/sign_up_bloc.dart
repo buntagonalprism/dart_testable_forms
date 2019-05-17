@@ -29,10 +29,12 @@ class SignUpBloc {
     _passwordControl = FormControl<String>(validators: passwordValidators);
 
     final confirmRequiredValidator = RequiredValidator('This is where the confirmation goes');
-    _passwordControl.valueUpdated.listen((password) {
-      final confirmMatchesValidator = RegexValidator(RegExp(password), 'Does not match');
-      final confirmValidators = vsb([confirmRequiredValidator, confirmMatchesValidator]);
-      _confirmControl.setValidators(confirmValidators);
+    _passwordControl.valueUpdated.listen((String password) {
+      if (password != null && password.length > 0) {
+        final confirmMatchesValidator = RegexValidator(RegExp(password), 'Does not match');
+        final confirmValidators = vsb([confirmRequiredValidator, confirmMatchesValidator]);
+        _confirmControl.setValidators(confirmValidators);
+      }
     });
     final confirmValidators = vsb([confirmRequiredValidator]);
     _confirmControl = FormControl<String>(initialValue: '', validators: confirmValidators);
@@ -44,7 +46,7 @@ class SignUpBloc {
       SignUpFields.EMAIL: _emailControl,
       SignUpFields.PASSWORD: _passwordControl,
       SignUpFields.CONFIRMATION: _confirmControl,
-      SignUpFields.STATE: FormControl<int>(initialValue: 3),
+      SignUpFields.BANANA_TYPE: FormControl<int>(initialValue: 3),
     }, SignUp.fromJson);
 
   }

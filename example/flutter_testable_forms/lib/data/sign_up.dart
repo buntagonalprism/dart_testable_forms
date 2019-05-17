@@ -11,7 +11,7 @@ class SignUp {
   String password;
   String confirmation;
   bool likeBananas;
-  int state;
+  int bananaType;
 
   Map<String, dynamic> toJson() => _$SignUpToJson(this);
   static SignUp fromJson(Map<String, dynamic> json) => _$SignUpFromJson(json);
@@ -23,5 +23,5 @@ class SignUpFields {
   static const String PASSWORD = 'password';
   static const String CONFIRMATION = 'confirmation';
   static const String LIKE_BANANAS = 'likeBananas';
-  static const String STATE = 'state';
+  static const String BANANA_TYPE = 'bananaType';
 }
