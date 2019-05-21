@@ -41,22 +41,6 @@ void main() {
       verifyNever(secondMock.setValue(any));
       verifyNever(thirdMock.setValue(any));
     });
-
-    test('enabled status when supplied', () {
-      final array = FormArray<String>(controls, enabled: false);
-      expect(array.enabled, false);
-      verify(firstMock.setEnabled(false)).called(1);
-      verify(secondMock.setEnabled(false)).called(1);
-      verify(thirdMock.setEnabled(false)).called(1);
-    });
-
-    test('no enabled status when not supplied', () {
-      final array = FormArray<String>(controls);
-      expect(array.enabled, true);
-      verifyNever(firstMock.setEnabled(any));
-      verifyNever(secondMock.setEnabled(any));
-      verifyNever(thirdMock.setEnabled(any));
-    });
   });
 
   group('Get value', () {

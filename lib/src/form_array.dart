@@ -9,7 +9,7 @@ class FormArray<T> extends AbstractControl<List<T>> {
   Stream<bool> get enabledUpdated => _enabledController.stream;
 
   final  _controls = List<AbstractControl<T>>();
-  FormArray(List<AbstractControl<T>> controls, {List<T> initialValue, bool enabled, ValidatorSet<List<T>> validators}) {
+  FormArray(List<AbstractControl<T>> controls, {List<T> initialValue, ValidatorSet<List<T>> validators}) {
     _controls.addAll(controls);
     if (initialValue != null) {
       setValue(initialValue);
