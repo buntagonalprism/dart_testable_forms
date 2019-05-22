@@ -14,9 +14,6 @@ class FormArray<T> extends AbstractControl<List<T>> {
     if (initialValue != null) {
       setValue(initialValue);
     }
-    if (enabled != null) {
-      setEnabled(enabled);
-    }
     _validators = validators ?? ValidatorSet<List<T>>([]);
   }
 

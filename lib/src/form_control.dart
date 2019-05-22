@@ -76,11 +76,11 @@ abstract class ErrorCombiner<T> extends Equatable {
 /// - null if the field is disabled
 /// - null if the field is enabled, but not touched or submitRequested
 /// - All error values combined with a newline separator if enabled, and either touched or submitRequested
-class NewlineErrorCombiner extends ErrorCombiner<String> {
+class NewlineErrorCombiner<T> extends ErrorCombiner<T> {
   final newlineSeparator;
   NewlineErrorCombiner([this.newlineSeparator = '\n']) : super([newlineSeparator]);
 
-  String combine(FormControl<String> control) {
+  String combine(FormControl<T> control) {
     if ((control.touched || control.submitRequested) && control.enabled) {
       return control.errors.length > 0
           ? control.errors.values.map((error) => error.toString()).join('\n')
