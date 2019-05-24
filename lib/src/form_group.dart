@@ -27,6 +27,11 @@ class FormGroup<T> extends AbstractControl<T> {
 
   @override
   T get value {
+    return deserializer(jsonValue);
+  }
+
+  @override 
+  dynamic get jsonValue {
     final values = Map<String, dynamic>();
     controls.forEach((key, control) {
       if (control.enabled) {
@@ -35,7 +40,7 @@ class FormGroup<T> extends AbstractControl<T> {
         values[key] = null;
       }
     });
-    return deserializer(values);
+    return values;
   }
 
   @override

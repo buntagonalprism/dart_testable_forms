@@ -80,7 +80,11 @@ void main() {
       thirdField.setValue('c');
       nestedField.setValue(NestedData()..innerFirst = '1'..innerSecond = '2');
       DummyData data = group.value;
-      expect(data.toJson(), {FIRST_KEY: 'a', SECOND_KEY: 'b', THIRD_KEY: 'c', NESTED_KEY : {'innerFirst': '1', 'innerSecond': '2'}});
+      expect(data.first, 'a'); 
+      expect(data.second, 'b');
+      expect(data.third, 'c');
+      expect(data.nested.innerFirst, '1');
+      expect(data.nested.innerSecond, '2');
     });
 
     test('Disabled children have null value', () {
@@ -92,7 +96,10 @@ void main() {
       nestedField.setEnabled(false);
       nestedField.setValue(NestedData()..innerFirst = '1'..innerSecond = '2');
       DummyData data = group.value;
-      expect(data.toJson(), {FIRST_KEY: 'a', SECOND_KEY: null, THIRD_KEY: 'c', NESTED_KEY: null});
+      expect(data.first, 'a'); 
+      expect(data.second, isNull);
+      expect(data.third, 'c');
+      expect(data.nested, isNull);
     });
   });
 
@@ -199,7 +206,7 @@ class DummyData {
       'first': first,
       'second': second,
       'third': third,
-      'nested': nested != null ? nested.toJson() : null, 
+      'nested': nested, 
     };
   }
   static DummyData fromJson(Map<String, dynamic> json) {
