@@ -50,6 +50,27 @@ abstract class AbstractControl<T> {
   /// within parent groups. 
   T get value;
 
+  dynamic get jsonValue {
+    T current = value;
+    return _convertToJson(current);
+  }
+
+  dynamic _convertToJson(dynamic val) {
+    if (val is String || val is int || val is double || val is bool || val == null) {
+      return val;
+    }
+    else if (val is Iterable) {
+      return val.map((item) => _convertToJson(val)).toList();
+    } else {
+      try {
+        Map<String, dynamic> values = val.toJson();
+        return values;
+      } on NoSuchMethodError catch(_) {
+        throw "Class ${val.runtimeType} must have a toJson() method returning Map<String, dynamic> to be used with dart_testable_forms";
+      }
+    }
+  }
+
   /// Update the value of this control
   setValue(T value);
 

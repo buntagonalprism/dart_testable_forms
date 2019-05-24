@@ -30,7 +30,7 @@ class FormGroup<T> extends AbstractControl<T> {
     final values = Map<String, dynamic>();
     controls.forEach((key, control) {
       if (control.enabled) {
-        values[key] = control.value;
+        values[key] = control.jsonValue;
       } else {
         values[key] = null;
       }
