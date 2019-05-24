@@ -40,6 +40,16 @@ void main() {
       expect(c.jsonValue, ['a', 'b']);
     });
 
+    test('Primitive map', () {
+      final c = FormControl<Map<String, int>>(initialValue: {'a': 1, 'b': 2});
+      expect(c.jsonValue, {'a': 1, 'b': 2});
+    });
+
+    test('Object map', () {
+      final c = FormControl<Map<String, DummyData>>(initialValue: {'a': DummyData(1, 'a'), 'b': DummyData(3, 'z')});
+      expect(c.jsonValue, {'a': {'number': 1, 'text': 'a'}, 'b' : {'number': 3, 'text': 'z'}});
+    });
+
     test('Object List', () {
       final c = FormControl<List<DummyData>>(initialValue: [DummyData(1, 'a'), DummyData(3, 'z')]);
       expect(c.jsonValue, [{'number': 1, 'text': 'a'}, {'number': 3, 'text': 'z'}]);
