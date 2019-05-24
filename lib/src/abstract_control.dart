@@ -60,7 +60,7 @@ abstract class AbstractControl<T> {
       return val;
     }
     else if (val is Iterable) {
-      return val.map((item) => _convertToJson(val)).toList();
+      return val.map((item) => _convertToJson(item)).toList();
     } else {
       try {
         Map<String, dynamic> values = val.toJson();
