@@ -101,6 +101,17 @@ void main() {
       expect(data.third, 'c');
       expect(data.nested, isNull);
     });
+
+    test('Values for fields without controls are preserved', () {
+      final group = FormGroup<DummyData>({
+        FIRST_KEY: firstField,
+      }, DummyData.fromJson);
+      group.setValue(DummyData()..first = 'a'..second='no control');
+      DummyData data = group.value;
+      expect(data.first, 'a');
+      expect(data.second, 'no control');
+    });
+
   });
 
   group('Updates are passed down to all children', () {

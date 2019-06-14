@@ -3,6 +3,7 @@ part of '../dart_testable_forms.dart';
 typedef Deserializer<T> = T Function(Map<String, dynamic> source);
 
 class FormGroup<T> extends AbstractControl<T> {
+  Map<String, dynamic> _values = {};
   final _controls = Map<String, AbstractControl>();
   final Deserializer<T> deserializer;
   FormGroup(Map<String, AbstractControl> controls, this.deserializer, {
@@ -32,15 +33,14 @@ class FormGroup<T> extends AbstractControl<T> {
 
   @override 
   dynamic get jsonValue {
-    final values = Map<String, dynamic>();
     controls.forEach((key, control) {
       if (control.enabled) {
-        values[key] = control.jsonValue;
+        _values[key] = control.jsonValue;
       } else {
-        values[key] = null;
+        _values[key] = null;
       }
     });
-    return values;
+    return _values;
   }
 
   @override
@@ -62,12 +62,12 @@ class FormGroup<T> extends AbstractControl<T> {
   @override
   setValue(T value) {
     if (value != null) {
-      final values = _serialize(value);
+      _values = _serialize(value);
       controls.forEach((key, control) {
-        if (!values.containsKey(key)) {
+        if (!_values.containsKey(key)) {
           throw "Control with key '$key' does not have a corresponding field in class ${value.runtimeType.toString()}";
         }
-        controls[key].setValue(values[key]);
+        controls[key].setValue(_values[key]);
       });
     }
   }
