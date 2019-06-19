@@ -12,7 +12,17 @@ void main() {
   ControlMock firstMock;
   ControlMock secondMock;
   ControlMock thirdMock;
-  List<AbstractControl<String>> controls;
+
+  FormControl<String> builder(String value, int index) {
+    return FormControl<String>(initialValue: value);
+  }
+
+  FormControl<String> mockBuilder(String value, int index) {
+    final ControlMock c = [firstMock, secondMock, thirdMock][index];
+    c.setValue(value);
+    when(c.value).thenReturn(value);
+    return c;
+  }
 
   setUp(() {
     firstMock = ControlMock();
@@ -24,95 +34,84 @@ void main() {
     thirdMock = ControlMock();
     when(thirdMock.enabled).thenReturn(true);
     when(thirdMock.errors).thenReturn({});
-    controls = [firstMock, secondMock, thirdMock];
   });
 
-  group('Initialisation passes down', () {
-    test('Value when supplied', () {
-      FormArray<String>(controls, initialValue: ['a', 'b', 'qwerty']);
-      verify(firstMock.setValue('a')).called(1);
-      verify(secondMock.setValue('b')).called(1);
-      verify(thirdMock.setValue('qwerty')).called(1);
+  group('Initialisations', () {
+    test('Builds controls when value supplied', () {
+      final array = FormArray<String>(builder, initialValue: ['a', 'b', 'qwerty']);
+      expect(array.controls[0].value, 'a');
+      expect(array.controls[1].value, 'b');
+      expect(array.controls[2].value, 'qwerty');
     });
 
-    test('no value when not supplied', () {
-      FormArray<String>(controls);
-      verifyNever(firstMock.setValue(any));
-      verifyNever(secondMock.setValue(any));
-      verifyNever(thirdMock.setValue(any));
+    test('Does nothing when value when not supplied', () {
+      final array = FormArray<String>(builder);
+      expect(array.controls, isEmpty);
     });
   });
 
   group('Get value', () {
     test('Value combines child values', () {
-      final array = FormArray<String>(controls);
-      when(firstMock.value).thenReturn('1');
-      when(secondMock.value).thenReturn('2');
-      when(thirdMock.value).thenReturn('3');
+      final array = FormArray<String>(builder, initialValue: ['a', 'b', 'c']);
+      expect(array.value, ['a', 'b', 'c']);
+      array.controls[0].setValue('1');
+      array.controls[1].setValue('2');
+      array.controls[2].setValue('3');
       expect(array.value, ['1', '2', '3']);
     });
 
     test('Disabled children are not added to value', () {
-      final array = FormArray<String>(controls);
-      when(firstMock.value).thenReturn('1');
-      when(secondMock.enabled).thenReturn(false);
-      when(secondMock.value).thenReturn('2');
-      when(thirdMock.value).thenReturn('3');
+      final array = FormArray<String>(builder, initialValue: ['1', '2', '3']);
+      array.controls[1].setEnabled(false);
       expect(array.value, ['1', '3']);
     });
   });
 
+  group('Updates are passed', () {
 
-  test('Get controller by index', () {
-    final array = FormArray<String>(controls);
-    expect(array.controls[1], secondMock);
-  });
-
-  group('Updates are passed down to all children', () {
-
-    test('Value', () {
-      final array = FormArray<String>(controls);
+    test('Value creates new controls', () {
+      final array = FormArray<String>(builder);
+      expect(array.controls, isEmpty);
       final data = ['tyu', 'ikm', 'dfg'];
       array.setValue(data);
-      verify(firstMock.setValue('tyu')).called(1);
-      verify(secondMock.setValue('ikm')).called(1);
-      verify(thirdMock.setValue('dfg')).called(1);
+      expect(array.controls.length, 3);
+      expect(array.controls[0].value, 'tyu');
+      expect(array.controls[1].value, 'ikm');
+      expect(array.controls[2].value, 'dfg');
     });
 
     test('submitRequest status', () {
-      final array = FormArray<String>(controls);
-      verifyNever(firstMock.setSubmitRequested(any));
-      array.setSubmitRequested(false);
-      verify(firstMock.setSubmitRequested(false)).called(1);
-      verify(secondMock.setSubmitRequested(false)).called(1);
-      verify(thirdMock.setSubmitRequested(false)).called(1);
+      final array = FormArray<String>(builder, initialValue: [null, null]);
+      expect(array.controls[0].submitRequested, isFalse);
+      array.setSubmitRequested(true);
+      expect(array.controls[0].submitRequested, isTrue);
+      expect(array.controls[1].submitRequested, isTrue);
     });
 
     test('enabled status', () {
-      final array = FormArray<String>(controls);
-      verifyNever(firstMock.setEnabled(any));
-      array.setEnabled(true);
-      verify(firstMock.setEnabled(true)).called(1);
-      verify(secondMock.setEnabled(true)).called(1);
-      verify(thirdMock.setEnabled(true)).called(1);
+      final array = FormArray<String>(builder, initialValue: [null, null]);
+      expect(array.controls[0].enabled, isTrue);
+      array.setEnabled(false);
+      expect(array.controls[0].enabled, isFalse);
+      expect(array.controls[1].enabled, isFalse);
     });
   });
 
   group('Validation', () {
     test('Default empty validator set', () {
       final emptyValidatorSet = ValidatorSet<List<String>>([]);
-      final array = FormArray<String>(controls);
+      final array = FormArray<String>(mockBuilder);
       expect(array.validators, emptyValidatorSet);
     });
 
     test('Initial validators stored', () {
       final validators = vsb([MockValidator({'oops':'an error'})]);
-      final array = FormArray<String>(controls, validators: validators);
+      final array = FormArray<String>(mockBuilder, validators: validators);
       expect(array.validators, validators);
     });
 
     test('Updated validators are stored', () {
-      final array = FormArray<String>(controls);
+      final array = FormArray<String>(mockBuilder);
       final validators = vsb([MockValidator({'oops':'an error'})]);
       array.setValidators(validators);
       expect(array.validators, validators);
@@ -120,11 +119,8 @@ void main() {
 
     test('Getting errors runs group validator', () {
       final validator = MockValidator({'oops':'an error'});
-      final array = FormArray<String>(controls, validators: vsb([validator]));
+      final array = FormArray<String>(builder, initialValue: ['123', '456', '789'], validators: vsb([validator]));
       expect(validator.calledWithValues, isEmpty);
-      when(firstMock.value).thenReturn('123');
-      when(secondMock.value).thenReturn('456');
-      when(thirdMock.value).thenReturn('789');
       final errors = array.errors;
       expect(errors, {'oops':'an error'});
       expect(validator.calledWithValues[0][0], '123');
@@ -134,7 +130,7 @@ void main() {
 
     test('Getting errors combines all enabled child errors keyed by their index', () {
       final validator = MockValidator({'oops':'This is a group error'});
-      final array = FormArray<String>(controls, validators: vsb([validator]));
+      final array = FormArray<String>(mockBuilder, initialValue: [null, null, null], validators: vsb([validator]));
       expect(validator.calledWithValues, isEmpty);
       when(firstMock.errors).thenReturn({}); // Should not be present in group error - no errors
       when(secondMock.enabled).thenReturn(false); // Should not be present in group error - disabled
@@ -154,8 +150,24 @@ void main() {
   });
 
   group('Modifying controls', () {
-    test('Adding notifies view and listeners', () async {
-      final array = FormArray<String>(controls);
+
+    test('Setting a new value notifies observers', () async {
+      final array = FormArray<String>(builder, initialValue: [null, null, null]);
+      bool didChange = false;
+      array.modelUpdated.listen((_) {
+        expect(array.controls.length, 2);
+        didChange = true;
+      });
+      expect(array.valueUpdated, emitsInOrder([
+        ['q', 'x']
+      ]));
+      array.setValue(['q', 'x']);
+      await Future.delayed(Duration());
+      expect(didChange, true);
+    });
+
+    test('Appending a value notifies observers', () async {
+      final array = FormArray<String>(builder, initialValue: [null, null, null]);
       bool didChange = false;
       array.modelUpdated.listen((_) {
         expect(array.controls.length, 4);
@@ -164,13 +176,13 @@ void main() {
       expect(array.valueUpdated, emitsInOrder([
         [null, null, null, 'a']
       ]));
-      array.append(FormControl<String>(initialValue: 'a'));
+      array.append('a');
       await Future.delayed(Duration());
       expect(didChange, true);
     });
 
-    test('Inserting notifies view and listeners', () async {
-      final array = FormArray<String>(controls);
+    test('Inserting a value notifies observers', () async {
+      final array = FormArray<String>(builder, initialValue: [null, null, null]);
       bool didChange = false;
       array.modelUpdated.listen((_) {
         expect(array.controls.length, 4);
@@ -179,16 +191,13 @@ void main() {
       expect(array.valueUpdated, emitsInOrder([
         [null, 'b', null, null]
       ]));
-      array.insertAt(FormControl<String>(initialValue: 'b'), 1);
+      array.insertAt('b', 1);
       await Future.delayed(Duration());
       expect(didChange, true);
     });
 
-    test('Inserting notifies view and listeners', () async {
-      when(firstMock.value).thenReturn('1');
-      when(secondMock.value).thenReturn('2');
-      when(thirdMock.value).thenReturn('3');
-      final array = FormArray<String>(controls);
+    test('Removing a value notifies observers', () async {
+      final array = FormArray<String>(builder, initialValue: ['1', '2', '3']);
       bool didChange = false;
       array.modelUpdated.listen((_) {
         expect(array.controls.length, 2);
@@ -204,7 +213,7 @@ void main() {
   });
 
   test('Enabled status change emitted to listeners', () {
-    final array = FormArray<String>(controls);
+    final array = FormArray<String>(mockBuilder);
     expect(array.enabledUpdated, emitsInOrder([false, true]));
     array.setEnabled(false);
     array.setEnabled(true);

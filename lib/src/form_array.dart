@@ -1,16 +1,19 @@
 part of '../dart_testable_forms.dart';
 
+typedef ControlBuilder<T> = AbstractControl<T> Function(T value, int index);
+
 class FormArray<T> extends AbstractControl<List<T>> {
+
 
   final _valueController = StreamController<List<T>>.broadcast();
   final _enabledController = StreamController<bool>.broadcast();
+  final _controls = List<AbstractControl<T>>();
 
   Stream<List<T>> get valueUpdated => _valueController.stream;
   Stream<bool> get enabledUpdated => _enabledController.stream;
 
-  final  _controls = List<AbstractControl<T>>();
-  FormArray(List<AbstractControl<T>> controls, {List<T> initialValue, ValidatorSet<List<T>> validators}) {
-    _controls.addAll(controls);
+  final ControlBuilder<T> builder;
+  FormArray(this.builder, {List<T> initialValue, ValidatorSet<List<T>> validators}) {
     if (initialValue != null) {
       setValue(initialValue);
     }
@@ -42,15 +45,13 @@ class FormArray<T> extends AbstractControl<List<T>> {
   }
 
   @override
-  setValue(List<T> value)  {
+  setValue(List<T> values)  {
     if (value != null) {
-      if (value.length != _controls.length) {
-        throw 'Attempting to set FormArray value with a list of length ${value.length}, but FormArray contains ${_controls.length} controls';
+      _controls.clear();
+      for (var i = 0; i < values.length; i++) {
+        _controls.add(builder(values[i], i));
       }
-      for (int i = 0; i < _controls.length; i++) {
-        _controls[i].setValue(value[i]);
-      }
-
+      _notifyValue();
     }
   }
 
@@ -84,13 +85,13 @@ class FormArray<T> extends AbstractControl<List<T>> {
     return groupErrors;
   }
 
-  void append(AbstractControl<T> control) {
-    _controls.add(control);
+  void append(T value) {
+    _controls.add(builder(value, _controls.length));
     _notifyValue();
   }
 
-  void insertAt(AbstractControl<T> control, int index) {
-    _controls.insert(index, control);
+  void insertAt(T value, int index) {
+    _controls.insert(index, builder(value, index));
     _notifyValue();
   }
 

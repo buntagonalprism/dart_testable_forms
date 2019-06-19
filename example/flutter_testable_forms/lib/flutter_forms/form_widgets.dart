@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dart_testable_forms/dart_testable_forms.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_testable_forms/flutter_forms/field_coordinators.dart';
 
 /// A very simple class that allows testing one level of a user interface at a time. Implement
 /// this class and return Container() to stop child components from rendering data.
@@ -68,18 +69,29 @@ class _ControlledTextFieldState extends State<ControlledTextField> {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      obscureText: widget.obscureText ?? false,
-      keyboardType: widget.textInputType,
-      focusNode: focus,
-      controller: controller,
-      enabled: widget.control.enabled,
-      textInputAction: widget.textInputAction,
-      onChanged: (value) => widget.control.setValue(value),
-      decoration: (widget.decoration ?? InputDecoration()).copyWith(
-        errorText: widget.control.combineErrors(NewlineErrorCombiner()),
+    return CoordinatedField(
+      controls: [widget.control],
+      focus: () => FocusScope.of(context).requestFocus(focus),
+      child: TextField(
+        obscureText: widget.obscureText ?? false,
+        keyboardType: widget.textInputType,
+        focusNode: focus,
+        controller: controller,
+        enabled: widget.control.enabled,
+        textInputAction: widget.textInputAction,
+        onChanged: (value) => widget.control.setValue(value),
+        onSubmitted: onSubmit,
+        decoration: (widget.decoration ?? InputDecoration()).copyWith(
+          errorText: widget.control.combineErrors(NewlineErrorCombiner()),
+        ),
       ),
     );
+  }
+
+  void onSubmit(String value) {
+    if (widget.textInputAction == TextInputAction.next) {
+      FieldCoordinator.of(context)?.focusNext(currentControls: [widget.control]);
+    }
   }
 
   @override

@@ -23,10 +23,10 @@ class FormBuilder {
     return FormControl<T>(validators: validators);
   }
 
-  FormArray<T> a<T>(List<T> initialValue, List<AbstractControl<T>> controls, [ValidatorSet<List<T>> validators]) {
-    return array<T>(initialValue, controls, validators);
+  FormArray<T> a<T>(ControlBuilder<T> builder, [List<T> initialValue, ValidatorSet<List<T>> validators]) {
+    return array<T>(builder, initialValue, validators);
   }
-  FormArray<T> array<T>(List<T> initialValue, List<AbstractControl<T>> controls, [ValidatorSet<List<T>> validators]) {
-    return FormArray<T>(controls, initialValue: initialValue, validators: validators);
+  FormArray<T> array<T>(ControlBuilder<T> builder, [List<T> initialValue, ValidatorSet<List<T>> validators]) {
+    return FormArray<T>(builder, initialValue: initialValue, validators: validators);
   }
 }
