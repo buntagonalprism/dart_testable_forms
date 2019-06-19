@@ -46,7 +46,7 @@ class FormArray<T> extends AbstractControl<List<T>> {
 
   @override
   setValue(List<T> values)  {
-    if (value != null) {
+    if (values != null) {
       _controls.clear();
       for (var i = 0; i < values.length; i++) {
         _controls.add(builder(values[i], i));

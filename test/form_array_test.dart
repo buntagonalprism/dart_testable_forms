@@ -166,6 +166,18 @@ void main() {
       expect(didChange, true);
     });
 
+    test('No action from setting a null list value', () async {
+      final array = FormArray<String>(builder, initialValue: ['1', '2', '3']);
+      bool didChange = false;
+      array.modelUpdated.listen((_) {
+        didChange = true;
+      });
+      array.setValue(null);
+      await Future.delayed(Duration());
+      expect(didChange, isFalse);
+      expect(array.controls.length, 3);
+    });
+
     test('Appending a value notifies observers', () async {
       final array = FormArray<String>(builder, initialValue: [null, null, null]);
       bool didChange = false;
