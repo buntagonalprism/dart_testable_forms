@@ -8,7 +8,7 @@ void main() {
   Map<String, dynamic> error;
 
   setUp(() {
-    error = {'ohNo':'an error occured'};
+    error = {'ohNo': 'an error occured'};
     withErrorValidator = MockValidator(error);
     noErrorValidator = MockValidator(null);
   });
@@ -46,9 +46,7 @@ void main() {
 
     test('updates value listeners', () {
       final control = FormControl<String>(initialValue: 'initialNotEmitted');
-      expect(control.valueUpdated, emitsInOrder([
-        '123'
-      ]));
+      expect(control.valueUpdated, emitsInOrder(['123']));
       control.setValue('123');
     });
 
@@ -65,7 +63,6 @@ void main() {
       expect(didChange, true);
     });
   });
-
 
   group('updating validators', () {
     test('Updates control validators', () {
@@ -139,11 +136,12 @@ void main() {
   });
 
   group('Newline error combiner output', () {
-
     FormControl<String> control;
     setUp(() {
       control = FormControl<String>();
-      control.setValidators(vb([MockValidator({'er1': 'hello', 'er2': 'foobar'})]));
+      control.setValidators(vb([
+        MockValidator({'er1': 'hello', 'er2': 'foobar'})
+      ]));
     });
 
     test('null when control not enabled', () {
@@ -176,12 +174,11 @@ void main() {
       expect(control.combineErrors(NewlineErrorCombiner()), 'hello\nfoobar');
     });
   });
-
 }
 
 class MockValidator extends Validator<String> {
   final Map<String, dynamic> returnErrors;
-  MockValidator([this.returnErrors]): super([returnErrors]);
+  MockValidator([this.returnErrors]);
 
   final List<String> calledWithValues = List<String>();
 
@@ -190,6 +187,9 @@ class MockValidator extends Validator<String> {
     calledWithValues.add(control.value);
     return returnErrors;
   }
+
+  @override
+  List<Object> get props => [returnErrors];
 }
 
 void setMockStates(FormControl<String> control, {bool enabled, bool touched, bool submitted}) {

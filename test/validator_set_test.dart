@@ -2,7 +2,6 @@ import 'package:dart_testable_forms/dart_testable_forms.dart';
 import 'package:test/test.dart';
 
 void main() {
-
   final vb = ValidatorSet.builder;
 
   test('Empty sets equal', () {
@@ -32,7 +31,7 @@ void main() {
   test('Different single element not equal', () {
     final v1 = vb([MockValidator('errMsg1')]);
     final v2 = vb([MockValidator('errMsg2')]);
-    expect(v1 == v2 , false);
+    expect(v1 == v2, false);
   });
 
   test('Multiple validator equality in different orders', () {
@@ -44,7 +43,7 @@ void main() {
 
 class MockValidator extends Validator<String> {
   final String returnError;
-  MockValidator([this.returnError]): super([returnError]);
+  MockValidator([this.returnError]);
 
   @override
   Map<String, dynamic> validate(AbstractControl<String> control) {
@@ -55,5 +54,7 @@ class MockValidator extends Validator<String> {
     }
     return null;
   }
-}
 
+  @override
+  List<Object> get props => [returnError];
+}

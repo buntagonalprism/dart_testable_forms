@@ -4,9 +4,7 @@ import 'package:test/test.dart';
 
 class ControlMock extends Mock implements FormControl<String> {}
 
-
 void main() {
-
   final vsb = ValidatorSet.builder;
 
   ControlMock firstMock;
@@ -68,7 +66,6 @@ void main() {
   });
 
   group('Updates are passed', () {
-
     test('Value creates new controls', () {
       final array = FormArray<String>(builder);
       expect(array.controls, isEmpty);
@@ -105,52 +102,54 @@ void main() {
     });
 
     test('Initial validators stored', () {
-      final validators = vsb([MockValidator({'oops':'an error'})]);
+      final validators = vsb([
+        MockValidator({'oops': 'an error'})
+      ]);
       final array = FormArray<String>(mockBuilder, validators: validators);
       expect(array.validators, validators);
     });
 
     test('Updated validators are stored', () {
       final array = FormArray<String>(mockBuilder);
-      final validators = vsb([MockValidator({'oops':'an error'})]);
+      final validators = vsb([
+        MockValidator({'oops': 'an error'})
+      ]);
       array.setValidators(validators);
       expect(array.validators, validators);
     });
 
     test('Getting errors runs group validator', () {
-      final validator = MockValidator({'oops':'an error'});
-      final array = FormArray<String>(builder, initialValue: ['123', '456', '789'], validators: vsb([validator]));
+      final validator = MockValidator({'oops': 'an error'});
+      final array = FormArray<String>(builder,
+          initialValue: ['123', '456', '789'], validators: vsb([validator]));
       expect(validator.calledWithValues, isEmpty);
       final errors = array.errors;
-      expect(errors, {'oops':'an error'});
+      expect(errors, {'oops': 'an error'});
       expect(validator.calledWithValues[0][0], '123');
       expect(validator.calledWithValues[0][1], '456');
       expect(validator.calledWithValues[0][2], '789');
     });
 
     test('Getting errors combines all enabled child errors keyed by their index', () {
-      final validator = MockValidator({'oops':'This is a group error'});
-      final array = FormArray<String>(mockBuilder, initialValue: [null, null, null], validators: vsb([validator]));
+      final validator = MockValidator({'oops': 'This is a group error'});
+      final array = FormArray<String>(mockBuilder,
+          initialValue: [null, null, null], validators: vsb([validator]));
       expect(validator.calledWithValues, isEmpty);
       when(firstMock.errors).thenReturn({}); // Should not be present in group error - no errors
       when(secondMock.enabled).thenReturn(false); // Should not be present in group error - disabled
-      when(secondMock.errors).thenReturn({'secondErr':'yes'});
-      when(thirdMock.errors).thenReturn({'thirdErrOne': 'also', 'thirdErrTwo':'another'});
+      when(secondMock.errors).thenReturn({'secondErr': 'yes'});
+      when(thirdMock.errors).thenReturn({'thirdErrOne': 'also', 'thirdErrTwo': 'another'});
       final errors = array.errors;
       expect(errors, {
         'oops': 'This is a group error',
         'controlErrors': {
-          '2': {
-            'thirdErrOne': 'also',
-            'thirdErrTwo': 'another'
-          }
+          '2': {'thirdErrOne': 'also', 'thirdErrTwo': 'another'}
         }
       });
     });
   });
 
   group('Modifying controls', () {
-
     test('Setting a new value notifies observers', () async {
       final array = FormArray<String>(builder, initialValue: [null, null, null]);
       bool didChange = false;
@@ -158,9 +157,11 @@ void main() {
         expect(array.controls.length, 2);
         didChange = true;
       });
-      expect(array.valueUpdated, emitsInOrder([
-        ['q', 'x']
-      ]));
+      expect(
+          array.valueUpdated,
+          emitsInOrder([
+            ['q', 'x']
+          ]));
       array.setValue(['q', 'x']);
       await Future.delayed(Duration());
       expect(didChange, true);
@@ -185,9 +186,11 @@ void main() {
         expect(array.controls.length, 4);
         didChange = true;
       });
-      expect(array.valueUpdated, emitsInOrder([
-        [null, null, null, 'a']
-      ]));
+      expect(
+          array.valueUpdated,
+          emitsInOrder([
+            [null, null, null, 'a']
+          ]));
       array.append('a');
       await Future.delayed(Duration());
       expect(didChange, true);
@@ -200,9 +203,11 @@ void main() {
         expect(array.controls.length, 4);
         didChange = true;
       });
-      expect(array.valueUpdated, emitsInOrder([
-        [null, 'b', null, null]
-      ]));
+      expect(
+          array.valueUpdated,
+          emitsInOrder([
+            [null, 'b', null, null]
+          ]));
       array.insertAt('b', 1);
       await Future.delayed(Duration());
       expect(didChange, true);
@@ -215,9 +220,11 @@ void main() {
         expect(array.controls.length, 2);
         didChange = true;
       });
-      expect(array.valueUpdated, emitsInOrder([
-        ['1', '3']
-      ]));
+      expect(
+          array.valueUpdated,
+          emitsInOrder([
+            ['1', '3']
+          ]));
       array.removeAt(1);
       await Future.delayed(Duration());
       expect(didChange, true);
@@ -230,12 +237,11 @@ void main() {
     array.setEnabled(false);
     array.setEnabled(true);
   });
-
 }
 
 class MockValidator extends Validator<List<String>> {
   final Map<String, dynamic> returnErrors;
-  MockValidator([this.returnErrors]): super([returnErrors]);
+  MockValidator([this.returnErrors]);
 
   final List<List<String>> calledWithValues = List<List<String>>();
 
@@ -244,4 +250,7 @@ class MockValidator extends Validator<List<String>> {
     calledWithValues.add(control.value);
     return returnErrors;
   }
+
+  @override
+  List<Object> get props => [returnErrors];
 }

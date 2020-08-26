@@ -2,24 +2,17 @@ part of '../dart_testable_forms.dart';
 
 /// Base class for performing validation on an control.
 abstract class Validator<T> extends Equatable {
-  Validator(List props) : super(props);
   Map<String, dynamic> validate(AbstractControl<T> control);
-
-  @override
-  String toString() => props.isNotEmpty ? (runtimeType.toString() + ":" + props.toString()) : super.toString();
 }
 
 /// Interface for validators that only care about the value of the control.
 abstract class ValueValidator<T> extends Validator<T> {
-  ValueValidator(List props) : super(props);
-
   Map<String, dynamic> validate(AbstractControl<T> control) {
     return validateValue(control.value);
   }
 
   Map<String, dynamic> validateValue(T value);
 }
-
 
 class ValidatorSet<T> {
   List<Validator<T>> _validators;
@@ -51,12 +44,9 @@ class ValidatorSet<T> {
   }
 
   @override
-  bool operator == (Object other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
-        (other is ValidatorSet &&
-            runtimeType == other.runtimeType &&
-            _validatorsEqual(other)
-        );
+        (other is ValidatorSet && runtimeType == other.runtimeType && _validatorsEqual(other));
   }
 
   bool _validatorsEqual(ValidatorSet other) {

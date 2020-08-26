@@ -19,7 +19,6 @@ class FormControl<T> extends AbstractControl<T> {
   @override
   T get value => _value;
 
-
   @override
   setValidators(ValidatorSet<T> validators) {
     _validators = validators;
@@ -63,12 +62,10 @@ class FormControl<T> extends AbstractControl<T> {
     _notifyView();
   }
 
-
   String combineErrors(ErrorCombiner<T> combiner) => combiner.combine(this);
 }
 
 abstract class ErrorCombiner<T> extends Equatable {
-  ErrorCombiner(List props) : super(props);
   String combine(FormControl<T> control);
 }
 
@@ -78,7 +75,7 @@ abstract class ErrorCombiner<T> extends Equatable {
 /// - All error values combined with a newline separator if enabled, and either touched or submitRequested
 class NewlineErrorCombiner<T> extends ErrorCombiner<T> {
   final newlineSeparator;
-  NewlineErrorCombiner([this.newlineSeparator = '\n']) : super([newlineSeparator]);
+  NewlineErrorCombiner([this.newlineSeparator = '\n']);
 
   String combine(FormControl<T> control) {
     if ((control.touched || control.submitRequested) && control.enabled) {
@@ -90,4 +87,6 @@ class NewlineErrorCombiner<T> extends ErrorCombiner<T> {
     }
   }
 
+  @override
+  List<Object> get props => [newlineSeparator];
 }

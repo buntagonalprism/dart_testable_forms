@@ -6,11 +6,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_testable_forms/flutter_forms/form_widgets.dart';
 import 'package:mockito/mockito.dart';
 
-
 class ControlMock extends Mock implements FormControl<String> {}
 
 void main() {
-
   ControlMock mock;
   StreamController<void> streamController; // ignore: close_sinks
   setUp(() {
@@ -44,7 +42,7 @@ void main() {
     });
   });
 
-  testWidgets('User input updates control', (WidgetTester tester) async{
+  testWidgets('User input updates control', (WidgetTester tester) async {
     when(mock.enabled).thenReturn(true);
     await pumpWithMaterial(tester, ControlledTextField(mock));
     final textFinder = find.byType(TextField);
@@ -82,9 +80,7 @@ void main() {
     });
   });
 
-
   group('Error message calculation:', () {
-
     testWidgets('Error message uses newline combiner', (WidgetTester tester) async {
       await pumpWithMaterial(tester, ControlledTextField(mock));
       verify(mock.combineErrors(NewlineErrorCombiner())).called(1);
@@ -99,24 +95,18 @@ void main() {
       await doublePump(tester);
       expect(find.text(msg), findsOneWidget);
     });
-
   });
 
   testWidgets('touched is set on field blur', (WidgetTester tester) async {
-    await pumpWithMaterial(tester, Column(
-      children: [
-        ControlledTextField(mock),
-        TextFormField()
-      ]
-    ));
+    await pumpWithMaterial(tester, Column(children: [ControlledTextField(mock), TextFormField()]));
     await tester.tap(find.byType(ControlledTextField));
     verifyNever(mock.setSubmitRequested(any));
     // Change focus to another text field
     await tester.tap(find.byType(TextFormField));
     verify(mock.setTouched(true)).called(1);
   });
-  
 }
+
 Future pumpWithMaterial(WidgetTester tester, Widget child) {
   return tester.pumpWidget(MaterialApp(
     home: Material(
@@ -142,7 +132,7 @@ void setMockStates(ControlMock mock, {bool enabled, bool touched, bool submitted
 
 class MockValidator extends Validator<String> {
   final Map<String, dynamic> returnErrors;
-  MockValidator([this.returnErrors]): super([returnErrors]);
+  MockValidator([this.returnErrors]);
 
   final List<String> calledWithValues = List<String>();
 
@@ -151,4 +141,7 @@ class MockValidator extends Validator<String> {
     calledWithValues.add(control.value);
     return returnErrors;
   }
+
+  @override
+  List<Object> get props => [returnErrors];
 }

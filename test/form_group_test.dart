@@ -4,10 +4,7 @@ import 'package:test/test.dart';
 
 class ControlMock extends Mock implements FormControl {}
 
-
-
 void main() {
-
   final vsb = ValidatorSet.builder;
 
   FormControl<String> firstField;
@@ -37,7 +34,6 @@ void main() {
   });
 
   group('Initialisation passes down', () {
-
     test('value when supplied', () {
       final data = DummyData.fromJson({FIRST_KEY: 'abc', SECOND_KEY: 'qwe', THIRD_KEY: '123'});
       FormGroup<DummyData>(controls, DummyData.fromJson, initialValue: data);
@@ -68,17 +64,17 @@ void main() {
     });
   });
 
-
-
   group('Get value:', () {
     test('Collects data from all children', () {
       final group = FormGroup<DummyData>(controls, DummyData.fromJson);
       firstField.setValue('a');
       secondField.setValue('b');
       thirdField.setValue('c');
-      nestedField.setValue(NestedData()..innerFirst = '1'..innerSecond = '2');
+      nestedField.setValue(NestedData()
+        ..innerFirst = '1'
+        ..innerSecond = '2');
       DummyData data = group.value;
-      expect(data.first, 'a'); 
+      expect(data.first, 'a');
       expect(data.second, 'b');
       expect(data.third, 'c');
       expect(data.nested.innerFirst, '1');
@@ -92,9 +88,11 @@ void main() {
       secondField.setValue('b');
       thirdField.setValue('c');
       nestedField.setEnabled(false);
-      nestedField.setValue(NestedData()..innerFirst = '1'..innerSecond = '2');
+      nestedField.setValue(NestedData()
+        ..innerFirst = '1'
+        ..innerSecond = '2');
       DummyData data = group.value;
-      expect(data.first, 'a'); 
+      expect(data.first, 'a');
       expect(data.second, isNull);
       expect(data.third, 'c');
       expect(data.nested, isNull);
@@ -104,16 +102,16 @@ void main() {
       final group = FormGroup<DummyData>({
         FIRST_KEY: firstField,
       }, DummyData.fromJson);
-      group.setValue(DummyData()..first = 'a'..second='no control');
+      group.setValue(DummyData()
+        ..first = 'a'
+        ..second = 'no control');
       DummyData data = group.value;
       expect(data.first, 'a');
       expect(data.second, 'no control');
     });
-
   });
 
   group('Updates are passed down to all children', () {
-
     test('Value', () {
       final group = FormGroup<DummyData>(controls, DummyData.fromJson);
       final data = DummyData.fromJson({FIRST_KEY: 'tyu', SECOND_KEY: 'ikm', THIRD_KEY: 'dfg'});
@@ -150,47 +148,56 @@ void main() {
     });
 
     test('Initial validators stored', () {
-      final validators = vsb([MockValidator<DummyData>({'oops':'an error'})]);
+      final validators = vsb([
+        MockValidator<DummyData>({'oops': 'an error'})
+      ]);
       final group = FormGroup<DummyData>(controls, DummyData.fromJson, validators: validators);
       expect(group.validators, validators);
     });
 
     test('Updated validators are stored', () {
       final group = FormGroup<DummyData>(controls, DummyData.fromJson);
-      final validators = vsb([MockValidator<DummyData>({'oops':'an error'})]);
+      final validators = vsb([
+        MockValidator<DummyData>({'oops': 'an error'})
+      ]);
       group.setValidators(validators);
       expect(group.validators, validators);
     });
 
     test('Getting errors runs group validator', () {
-      final validator = MockValidator<DummyData>({'oops':'an error'});
-      final group = FormGroup<DummyData>(controls, DummyData.fromJson, validators: vsb([validator]));
+      final validator = MockValidator<DummyData>({'oops': 'an error'});
+      final group =
+          FormGroup<DummyData>(controls, DummyData.fromJson, validators: vsb([validator]));
       expect(validator.calledWithValues, isEmpty);
       firstField.setValue('123');
       secondField.setValue('456');
       thirdField.setValue('789');
       final errors = group.errors;
-      expect(errors, {'oops':'an error'});
+      expect(errors, {'oops': 'an error'});
       expect(validator.calledWithValues[0].first, '123');
       expect(validator.calledWithValues[0].second, '456');
       expect(validator.calledWithValues[0].third, '789');
     });
 
     test('Getting errors combines all enabled child errors keyed by their control Id', () {
-      final validator = MockValidator<DummyData>({'oops':'This is a group error'});
-      final group = FormGroup<DummyData>(controls, DummyData.fromJson, validators: vsb([validator]));
+      final validator = MockValidator<DummyData>({'oops': 'This is a group error'});
+      final group =
+          FormGroup<DummyData>(controls, DummyData.fromJson, validators: vsb([validator]));
       secondField.setEnabled(false); // Should not be present in group error - disabled
-      secondField.setValidators(vsb([MockValidator({'secondErr':'yes'})]));
-      thirdField.setValidators(vsb([MockValidator({'thirdErrOne': 'also', 'thirdErrTwo':'another'})]));
-      nestedField.setValidators(vsb([MockValidator({'nested':'so error, wow'})]));
+      secondField.setValidators(vsb([
+        MockValidator({'secondErr': 'yes'})
+      ]));
+      thirdField.setValidators(vsb([
+        MockValidator({'thirdErrOne': 'also', 'thirdErrTwo': 'another'})
+      ]));
+      nestedField.setValidators(vsb([
+        MockValidator({'nested': 'so error, wow'})
+      ]));
       final errors = group.errors;
       expect(errors, {
         'oops': 'This is a group error',
         'controlErrors': {
-          THIRD_KEY: {
-            'thirdErrOne': 'also',
-            'thirdErrTwo': 'another'
-          },
+          THIRD_KEY: {'thirdErrOne': 'also', 'thirdErrTwo': 'another'},
           NESTED_KEY: {
             'nested': 'so error, wow',
           },
@@ -215,15 +222,16 @@ class DummyData {
       'first': first,
       'second': second,
       'third': third,
-      'nested': nested, 
+      'nested': nested,
     };
   }
+
   static DummyData fromJson(Map<String, dynamic> json) {
     return DummyData()
-        ..first = json['first']
-        ..second = json['second']
-        ..third = json['third']
-        ..nested = json['nested'] != null ? NestedData.fromJson(json['nested']) : null;
+      ..first = json['first']
+      ..second = json['second']
+      ..third = json['third']
+      ..nested = json['nested'] != null ? NestedData.fromJson(json['nested']) : null;
   }
 }
 
@@ -236,16 +244,17 @@ class NestedData {
       'innerSecond': innerSecond,
     };
   }
+
   static NestedData fromJson(Map<String, dynamic> json) {
     return NestedData()
-        ..innerFirst = json['innerFirst']
-        ..innerSecond = json['innerSecond'];
+      ..innerFirst = json['innerFirst']
+      ..innerSecond = json['innerSecond'];
   }
 }
 
 class MockValidator<T> extends Validator<T> {
   final Map<String, dynamic> returnErrors;
-  MockValidator([this.returnErrors]): super([returnErrors]);
+  MockValidator([this.returnErrors]);
 
   final List<T> calledWithValues = List<T>();
 
@@ -254,4 +263,7 @@ class MockValidator<T> extends Validator<T> {
     calledWithValues.add(control.value);
     return returnErrors;
   }
+
+  @override
+  List<Object> get props => [returnErrors];
 }
